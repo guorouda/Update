@@ -104,6 +104,8 @@ public class Main_Gui extends JFrame{
                     cleanup();
                     launch.setEnabled(true);
                     outText.setText(outText.getText()+"\nUpdate Finished!");
+                    Thread.sleep(3000);
+                    launch();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
@@ -114,7 +116,7 @@ public class Main_Gui extends JFrame{
     }
     private void launch()
     {
-        String[] run = {"java","-jar","update app.jar"};
+        String[] run = {"java","-jar","update_app.jar"};
         try {
             Runtime.getRuntime().exec(run);
         } catch (Exception ex) {
@@ -237,7 +239,7 @@ public class Main_Gui extends JFrame{
     }
     private String getDownloadLinkFromHost() throws MalformedURLException, IOException
     {
-        String path = "http://h3r3t1cupdate.bravehost.com/url.html";
+        String path = "http://localhost:8008/Update/url.html";
         URL url = new URL(path);
 
         InputStream html = null;
