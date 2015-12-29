@@ -50,10 +50,7 @@ public class Main_Gui extends JFrame{
         download();
     }
     private void initComponents() {
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-       
 
         pan1 = new JPanel();
         pan1.setLayout(new BorderLayout());
@@ -68,7 +65,6 @@ public class Main_Gui extends JFrame{
         launch = new JButton("Launch App");
         launch.setEnabled(false);
         launch.addActionListener(new ActionListener(){
-
             public void actionPerformed(ActionEvent e) {
                 launch();
             }
@@ -77,7 +73,6 @@ public class Main_Gui extends JFrame{
 
         cancle = new JButton("Cancel Update");
         cancle.addActionListener(new ActionListener(){
-
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
             }
@@ -91,31 +86,29 @@ public class Main_Gui extends JFrame{
         this.setSize(500, 400);
     }
 
-    private void download()
-    {
+    private void download() {
         worker = new Thread(
-        new Runnable(){
-            public void run()
-            {
-                try {
-                    downloadFile(getDownloadLinkFromHost());
-                    unzip();
-                    copyFiles(new File(root),new File("").getAbsolutePath());
-                    cleanup();
-                    launch.setEnabled(true);
-                    outText.setText(outText.getText()+"\nUpdate Finished!");
-                    Thread.sleep(3000);
-                    launch();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
-                }
-            }
+	        new Runnable(){
+	            public void run() {
+	                try {
+	                    downloadFile(getDownloadLinkFromHost());
+	                    unzip();
+	                    copyFiles(new File(root),new File("").getAbsolutePath());
+	                    cleanup();
+	                    launch.setEnabled(true);
+	                    outText.setText(outText.getText()+"\nUpdate Finished!");
+	                    Thread.sleep(3000);
+	                    launch();
+	                } catch (Exception ex) {
+	                    ex.printStackTrace();
+	                    JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
+	                }
+	            }
         });
         worker.start();
     }
-    private void launch()
-    {
+    
+    private void launch() {
         String[] run = {"java","-jar","update_app.jar"};
         try {
             Runtime.getRuntime().exec(run);
@@ -124,53 +117,44 @@ public class Main_Gui extends JFrame{
         }
         System.exit(0);
     }
-    private void cleanup()
-    {
+    
+    private void cleanup() {
         outText.setText(outText.getText()+"\nPreforming clean up...");
         File f = new File("update.zip");
         f.delete();
         remove(new File(root));
         new File(root).delete();
     }
-    private void remove(File f)
-    {
+    
+    private void remove(File f) {
         File[]files = f.listFiles();
-        for(File ff:files)
-        {
-            if(ff.isDirectory())
-            {
+        for(File ff:files) {
+            if(ff.isDirectory()) {
                 remove(ff);
                 ff.delete();
-            }
-            else
-            {
+            } else {
                 ff.delete();
             }
         }
     }
-    private void copyFiles(File f,String dir) throws IOException
-    {
+    
+    private void copyFiles(File f,String dir) throws IOException {
         File[]files = f.listFiles();
-        for(File ff:files)
-        {
+        for(File ff:files) {
             if(ff.isDirectory()){
-                new File(dir+"/"+ff.getName()).mkdir();
-                copyFiles(ff,dir+"/"+ff.getName());
+              new File(dir+"/"+ff.getName()).mkdir();
+              copyFiles(ff,dir+"/"+ff.getName());
+            }else{
+              copy(ff.getAbsolutePath(),dir+"/"+ff.getName());
             }
-            else
-            {
-                copy(ff.getAbsolutePath(),dir+"/"+ff.getName());
-            }
-
         }
     }
+    
     public void copy(String srFile, String dtFile) throws FileNotFoundException, IOException{
-
           File f1 = new File(srFile);
           File f2 = new File(dtFile);
 
           InputStream in = new FileInputStream(f1);
-
           OutputStream out = new FileOutputStream(f2);
 
           byte[] buf = new byte[1024];
@@ -181,8 +165,8 @@ public class Main_Gui extends JFrame{
           in.close();
           out.close();
       }
-    private void unzip() throws IOException
-    {
+    
+    private void unzip() throws IOException {
          int BUFFER = 2048;
          BufferedOutputStream dest = null;
          BufferedInputStream is = null;
@@ -193,20 +177,16 @@ public class Main_Gui extends JFrame{
          while(e.hasMoreElements()) {
             entry = (ZipEntry) e.nextElement();
             outText.setText(outText.getText()+"\nExtracting: " +entry);
-            if(entry.isDirectory())
+            if(entry.isDirectory()){
                 (new File(root+entry.getName())).mkdir();
-            else{
+            }else{
                 (new File(root+entry.getName())).createNewFile();
-                is = new BufferedInputStream
-                  (zipfile.getInputStream(entry));
+                is = new BufferedInputStream(zipfile.getInputStream(entry));
                 int count;
                 byte data[] = new byte[BUFFER];
-                FileOutputStream fos = new
-                  FileOutputStream(root+entry.getName());
-                dest = new
-                  BufferedOutputStream(fos, BUFFER);
-                while ((count = is.read(data, 0, BUFFER))
-                  != -1) {
+                FileOutputStream fos = new FileOutputStream(root+entry.getName());
+                dest = new BufferedOutputStream(fos, BUFFER);
+                while ((count = is.read(data, 0, BUFFER)) != -1) {
                    dest.write(data, 0, count);
                 }
                 dest.flush();
@@ -216,8 +196,8 @@ public class Main_Gui extends JFrame{
          }
 
     }
-    private void downloadFile(String link) throws MalformedURLException, IOException
-    {
+    
+    private void downloadFile(String link) throws MalformedURLException, IOException {
         URL url = new URL(link);
         URLConnection conn = url.openConnection();
         InputStream is = conn.getInputStream();
@@ -237,13 +217,12 @@ public class Main_Gui extends JFrame{
         outText.setText(outText.getText()+"\nDownload Complete!");
 
     }
-    private String getDownloadLinkFromHost() throws MalformedURLException, IOException
-    {
+    
+    private String getDownloadLinkFromHost() throws MalformedURLException, IOException {
         String path = "http://localhost:8008/Update/url.html";
         URL url = new URL(path);
 
         InputStream html = null;
-
         html = url.openStream();
 
         int c = 0;
@@ -251,11 +230,12 @@ public class Main_Gui extends JFrame{
 
         while(c != -1) {
             c = html.read();
-        buffer.append((char)c);
-
+            buffer.append((char)c);
         }
+        
         return buffer.substring(buffer.indexOf("[url]")+5,buffer.indexOf("[/url]"));
     }
+    
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
